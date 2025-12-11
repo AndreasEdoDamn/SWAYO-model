@@ -113,8 +113,6 @@ menggunakan model YOLOv8 yang telah dilatih.
 - Hasil annotasi langsung tampil  
 """)
 
-    st.markdown('<button class="start-btn">Mulai Deteksi Sekarang</button>', unsafe_allow_html=True)
 
-st.markdown("</div>", unsafe_allow_html=True)
-
+st.markdown('</div>', unsafe_allow_html=True)
 st.markdown('<p class="footer">© 2025 SWAYO – Smart Waste Classifier with YOLO</p>', unsafe_allow_html=True)
