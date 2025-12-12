@@ -60,10 +60,15 @@ h1 {
     opacity: 0.7;
     font-size: 14px;
 }
+            a{
+            text-decoration: none;
+            color: #1c3d27 !important;
+            font-weight: 600;
+            font-size: 16px;}
 </style>
 """, unsafe_allow_html=True)
 
-url_go_back = "https://swayo.vercel.app/categories.html"
+
 # ============================
 # LOAD MODEL
 # ============================
@@ -83,11 +88,7 @@ class YOLOVideoTransformer(VideoTransformerBase):
 # ============================
 # PAGE LAYOUT
 # ============================
-st.markdown("Check out this link: [link](%s)" % url_go_back)
-st.markdown(
-    '<a href="https://swayo.vercel.app/categories.html" target="_self">← Go Back</a>',
-    unsafe_allow_html=True
-)
+st.markdown("<a href=\"https://swayo.vercel.app/categories.html\"> < Go Back ", unsafe_allow_html=True)
 st.markdown("<h1>🗑️ SWAYO: Smart Waste Classifier with YOLO</h1>", unsafe_allow_html=True)
 st.write("Deteksi sampah secara real-time menggunakan model YOLOv8 yang sudah dilatih khusus untuk klasifikasi sampah.")
 
