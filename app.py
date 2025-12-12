@@ -21,7 +21,7 @@ st.set_page_config(
 st.markdown("""
 <style>
 body {
-    background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+    background: white;
 }
 
 .main-card {
@@ -83,8 +83,8 @@ class YOLOVideoTransformer(VideoTransformerBase):
 # ============================
 # PAGE LAYOUT
 # ============================
-st.markdown("<h1>🗑️ Smart Waste Classifier with YOLOv8</h1>", unsafe_allow_html=True)
-st.write("Deteksi sampah secara real-time menggunakan model YOLOv8 yang sudah Anda latih.")
+st.markdown("<h1>🗑️ SWAYO: Smart Waste Classifier with YOLO</h1>", unsafe_allow_html=True)
+st.write("Deteksi sampah secara real-time menggunakan model YOLOv8 yang sudah dilatih khusus untuk klasifikasi sampah.")
 
 st.markdown('<div class="main-card">', unsafe_allow_html=True)
 
