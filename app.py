@@ -21,7 +21,7 @@ st.set_page_config(
 st.markdown("""
 <style>
 body {
-    background: white;
+    background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
 }
 
 .main-card {
