@@ -5,9 +5,11 @@ import streamlit as st
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 from ultralytics import YOLO
 import av
+import cv2
+import numpy as np
 
 # ============================
-# CUSTOM PAGE CONFIG
+# PAGE CONFIG
 # ============================
 st.set_page_config(
     page_title="SWAYO – Smart Waste YOLO",
@@ -16,13 +18,11 @@ st.set_page_config(
 )
 
 # ============================
-# CUSTOM CSS FOR MODERN UI
+# CSS
 # ============================
 st.markdown("""
 <style>
-body {
-    background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
-}
+body { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
 
 .main-card {
     background: white;
@@ -37,90 +37,172 @@ h1 {
     color: #febd14 !important;
 }
 
-.start-btn {
-    background: #00a884;
-    padding: 12px 25px;
-    color: white;
-    border-radius: 10px;
+.count-box {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 14px;
+    border-left: 5px solid #febd14;
     font-size: 18px;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
+    margin-bottom: 12px;
 }
 
-.start-btn:hover {
-    background: #008b6f;
-    transform: scale(1.02);
+.count-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #444;
 }
 
-.footer {
-    margin-top: 50px;
-    text-align: center;
-    opacity: 0.7;
-    font-size: 14px;
+.upload-card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    margin-top: 30px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.10);
 }
+
+img {
+    max-width: 100%;
+    border-radius: 12px;
+}
+
 a {
-    text-decoration: none;   /* Menghilangkan underline */
+    text-decoration: none;
     color: #febd14 !important;
     font-weight: 600;
-    font-size: 24px;         /* Perbesar ukuran teks */
+    font-size: 24px;
 }
-
 </style>
 """, unsafe_allow_html=True)
 
-
 # ============================
-# LOAD MODEL
+# LOAD YOLO MODEL
 # ============================
 model = YOLO("best.torchscript")
 
+# ============================
+# VIDEO TRANSFORMER CLASS
+# ============================
 class YOLOVideoTransformer(VideoTransformerBase):
     def __init__(self):
         self.model = model
+        self.latest_counts = {}  # real-time count
 
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
         results = self.model(img, imgsz=640)
+
+        counts = {}
+        for box in results[0].boxes:
+            cls_id = int(box.cls[0])
+            cls_name = results[0].names[cls_id]
+            counts[cls_name] = counts.get(cls_name, 0) + 1
+
+        self.latest_counts = counts
         annotated = results[0].plot()
         return annotated
 
 
 # ============================
-# PAGE LAYOUT
+# HEADER
 # ============================
-st.markdown("<a href=\"https://swayo.vercel.app/categories.html\"> < Go Back ", unsafe_allow_html=True)
+st.markdown('<a href="https://swayo.vercel.app/categories.html">← Go Back</a>', unsafe_allow_html=True)
 st.markdown("<h1>🗑️ SWAYO: Smart Waste Classifier with YOLO</h1>", unsafe_allow_html=True)
-st.write("Deteksi sampah secara real-time menggunakan model YOLOv8 yang sudah dilatih khusus untuk klasifikasi sampah.")
 
+
+# ============================
+# MAIN CARD
+# ============================
 st.markdown('<div class="main-card">', unsafe_allow_html=True)
 
-col1, col2 = st.columns([1.3, 1])
+st.subheader("🎥 Real-time Object Detection")
+st.write("Model akan mendeteksi sampah dari webcam secara real-time dan menghitung jumlah objek setiap detik.")
 
+col1, col2 = st.columns([1.3, 0.7])
+
+# ============================
+# LEFT: VIDEO STREAM
+# ============================
 with col1:
-    st.subheader("🎥 Live Detection (Webcam)")
-    st.write("Tekan tombol di bawah untuk memulai live detection:")
-
-    webrtc_streamer(
+    webrtc_ctx = webrtc_streamer(
         key="yolo-webcam",
         video_transformer_factory=YOLOVideoTransformer,
         media_stream_constraints={"video": True, "audio": False},
         async_processing=True,
     )
 
+# ============================
+# RIGHT: REAL-TIME COUNTER
+# ============================
 with col2:
-    st.subheader("ℹ️ Tentang Aplikasi")
-    st.write("""
-Smart Waste Classifier (SWAYO) mendeteksi jenis sampah secara otomatis 
-menggunakan model YOLOv8 yang telah dilatih.
-    
-**Fitur:**
-- Real-time detection via webcam  
-- Model cepat & akurat  
-- Hasil annotasi langsung tampil  
-""")
+    st.markdown("<h3>📊 Real-time Detection Count</h3>", unsafe_allow_html=True)
+
+    if webrtc_ctx and webrtc_ctx.video_transformer:
+        current_counts = webrtc_ctx.video_transformer.latest_counts
+
+        if len(current_counts) == 0:
+            st.info("Belum ada objek terdeteksi.")
+        else:
+            for cls, total in current_counts.items():
+                st.markdown(
+                    f"""
+                    <div class="count-box">
+                        <div class="count-title">{cls.capitalize()}</div>
+                        Jumlah terdeteksi: <b>{total}</b>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
 
+# ============================
+# FILE UPLOAD DETECTION
+# ============================
+st.markdown('<div class="upload-card">', unsafe_allow_html=True)
+st.subheader("📁 Upload Gambar untuk Deteksi")
 
+uploaded_file = st.file_uploader("Upload gambar sampah", type=["jpg", "jpeg", "png"])
+
+if uploaded_file:
+    st.write("📌 Hasil deteksi:")
+
+    file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+    img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+
+    results = model(img)
+
+    # Annotated image
+    annotated = results[0].plot()
+
+    # Convert BGR → RGB
+    annotated = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
+
+    # Show image
+    st.image(annotated, caption="Hasil Deteksi dengan Bounding Box")
+
+    # Show Detection Details
+    st.write("### 🔍 Detail Deteksi")
+    counts = {}
+
+    for box in results[0].boxes:
+        cls_id = int(box.cls[0])
+        cls_name = results[0].names[cls_id]
+        counts[cls_name] = counts.get(cls_name, 0) + 1
+
+    for cls, total in counts.items():
+        st.markdown(
+            f"""
+            <div class="count-box">
+                <div class="count-title">{cls.capitalize()}</div>
+                Jumlah dalam gambar: <b>{total}</b>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+st.markdown("</div>", unsafe_allow_html=True)  # close upload-card
+
+# ============================
+# FOOTER
+# ============================
 st.markdown('<p class="footer">© 2025 SWAYO – Smart Waste Classifier with YOLO</p>', unsafe_allow_html=True)
+
