@@ -130,28 +130,6 @@ with col1:
         async_processing=True,
     )
 
-# ============================
-# RIGHT: REAL-TIME COUNTER
-# ============================
-with col2:
-    st.markdown("<h3>📊 Real-time Detection Count</h3>", unsafe_allow_html=True)
-
-    if webrtc_ctx and webrtc_ctx.video_transformer:
-        current_counts = webrtc_ctx.video_transformer.latest_counts
-
-        if len(current_counts) == 0:
-            st.info("Belum ada objek terdeteksi.")
-        else:
-            for cls, total in current_counts.items():
-                st.markdown(
-                    f"""
-                    <div class="count-box">
-                        <div class="count-title">{cls.capitalize()}</div>
-                        Jumlah terdeteksi: <b>{total}</b>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
 
 
 # ============================
