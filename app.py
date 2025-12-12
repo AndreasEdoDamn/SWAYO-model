@@ -60,11 +60,13 @@ h1 {
     opacity: 0.7;
     font-size: 14px;
 }
-            a{
-            text-decoration: none;
-            color: #febd14 !important;
-            font-weight: 600;
-            font-size: 16px;}
+a {
+    text-decoration: none;   /* Menghilangkan underline */
+    color: #febd14 !important;
+    font-weight: 600;
+    font-size: 24px;         /* Perbesar ukuran teks */
+}
+
 </style>
 """, unsafe_allow_html=True)
 
