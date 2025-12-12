@@ -33,6 +33,16 @@ class YOLOVideoTransformer(VideoTransformerBase):
         annotated = results[0].plot()
         return annotated
 
+
+# ============================
+# SIDEBAR NAVIGATION
+# ============================
+page = st.sidebar.radio(
+    "Navigation",
+    ["Webcam Detector", "Detection Page (HTML)"]
+)
+
+
 # ============================
 # PAGE 1 — STREAMLIT WEBCAM YOLO
 # ============================
