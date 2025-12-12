@@ -32,19 +32,6 @@ class YOLOVideoTransformer(VideoTransformerBase):
         results = self.model(img, imgsz=640)
         annotated = results[0].plot()
         return annotated
-    
-    page = st.session_state.get("page", "home")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("Webcam Detector"):
-            st.session_state.page = "cam"
-
-    with col2:
-        if st.button("HTML Detection Page"):
-            st.session_state.page = "html"
-
 
 # ============================
 # PAGE 1 — STREAMLIT WEBCAM YOLO
