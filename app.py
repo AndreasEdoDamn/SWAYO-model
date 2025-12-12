@@ -5,7 +5,7 @@ import streamlit as st
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 from ultralytics import YOLO
 import av
-
+import streamlit.components.v1 as components
 # ============================
 # CUSTOM PAGE CONFIG
 # ============================
@@ -63,7 +63,12 @@ h1 {
 </style>
 """, unsafe_allow_html=True)
 
-
+html_go_back = """
+<a href="#" onclick="top.location.href='https://swayo.vercel.app/categories.html'; return false;"
+   style="text-decoration:none;font-weight:600;">
+  ← Go Back
+</a>
+"""
 # ============================
 # LOAD MODEL
 # ============================
@@ -83,10 +88,7 @@ class YOLOVideoTransformer(VideoTransformerBase):
 # ============================
 # PAGE LAYOUT
 # ============================
-st.markdown(
-    '<a href="https://swayo.vercel.app/categories.html" target="_self">← Go Back</a>',
-    unsafe_allow_html=True
-)
+components.html(html_go_back, height=50)
 st.markdown("<h1>🗑️ SWAYO: Smart Waste Classifier with YOLO</h1>", unsafe_allow_html=True)
 st.write("Deteksi sampah secara real-time menggunakan model YOLOv8 yang sudah dilatih khusus untuk klasifikasi sampah.")
 
