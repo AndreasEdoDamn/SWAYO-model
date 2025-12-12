@@ -32,15 +32,18 @@ class YOLOVideoTransformer(VideoTransformerBase):
         results = self.model(img, imgsz=640)
         annotated = results[0].plot()
         return annotated
+    
+    page = st.session_state.get("page", "home")
 
+    col1, col2 = st.columns(2)
 
-# ============================
-# SIDEBAR NAVIGATION
-# ============================
-page = st.sidebar.radio(
-    "Navigation",
-    ["Webcam Detector", "Detection Page (HTML)"]
-)
+    with col1:
+        if st.button("Webcam Detector"):
+            st.session_state.page = "cam"
+
+    with col2:
+        if st.button("HTML Detection Page"):
+            st.session_state.page = "html"
 
 
 # ============================
@@ -391,6 +394,15 @@ if page == "Detection Page (HTML)":
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="nav-title">Smart Waste<br>Classifier With YOLO</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="https://swayo-detection.streamlit.app/">Detection</a>
+            <a href="categories.html">Category</a>
+            <div class="profile-btn">nama profile</div>
+        </div>
+    </nav>
     <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-title">Smart Waste<br>Classifier With YOLO</div>
