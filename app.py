@@ -83,7 +83,10 @@ class YOLOVideoTransformer(VideoTransformerBase):
 # ============================
 # PAGE LAYOUT
 # ============================
-st.markdown("<a href=\"https://swayo.vercel.app/categories.html\"> < Go Back ", unsafe_allow_html=True)
+st.markdown(
+    '<a href="https://swayo.vercel.app/categories.html" target="_self">← Go Back</a>',
+    unsafe_allow_html=True
+)
 st.markdown("<h1>🗑️ SWAYO: Smart Waste Classifier with YOLO</h1>", unsafe_allow_html=True)
 st.write("Deteksi sampah secara real-time menggunakan model YOLOv8 yang sudah dilatih khusus untuk klasifikasi sampah.")
 
