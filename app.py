@@ -34,7 +34,7 @@ body {
 
 h1 {
     font-weight: 700 !important;
-    color: #1c3d27 !important;
+    color: #febd14 !important;
 }
 
 .start-btn {
@@ -62,7 +62,7 @@ h1 {
 }
             a{
             text-decoration: none;
-            color: #1c3d27 !important;
+            color: #febd14 !important;
             font-weight: 600;
             font-size: 16px;}
 </style>
