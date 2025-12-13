@@ -131,54 +131,6 @@ with col1:
     )
 
 
-
-# ============================
-# FILE UPLOAD DETECTION
-# ============================
-st.markdown('<div class="upload-card">', unsafe_allow_html=True)
-st.subheader("📁 Upload Gambar untuk Deteksi")
-
-uploaded_file = st.file_uploader("Upload gambar sampah", type=["jpg", "jpeg", "png"])
-
-if uploaded_file:
-    st.write("📌 Hasil deteksi:")
-
-    file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-
-    results = model(img)
-
-    # Annotated image
-    annotated = results[0].plot()
-
-    # Convert BGR → RGB
-    annotated = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
-
-    # Show image
-    st.image(annotated, caption="Hasil Deteksi dengan Bounding Box")
-
-    # Show Detection Details
-    st.write("### 🔍 Detail Deteksi")
-    counts = {}
-
-    for box in results[0].boxes:
-        cls_id = int(box.cls[0])
-        cls_name = results[0].names[cls_id]
-        counts[cls_name] = counts.get(cls_name, 0) + 1
-
-    for cls, total in counts.items():
-        st.markdown(
-            f"""
-            <div class="count-box">
-                <div class="count-title">{cls.capitalize()}</div>
-                Jumlah dalam gambar: <b>{total}</b>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-st.markdown("</div>", unsafe_allow_html=True)  # close upload-card
-
 # ============================
 # FOOTER
 # ============================
