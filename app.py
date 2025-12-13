@@ -30,6 +30,7 @@ body { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
     border-radius: 18px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.12);
     margin-top: 30px;
+    text-align: center;
 }
 
 h1 {
@@ -37,32 +38,10 @@ h1 {
     color: #febd14 !important;
 }
 
-.count-box {
-    background: #f9f9f9;
-    padding: 20px;
-    border-radius: 14px;
-    border-left: 5px solid #febd14;
-    font-size: 18px;
-    margin-bottom: 12px;
-}
-
-.count-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #444;
-}
-
-.upload-card {
-    background: white;
-    padding: 20px;
-    border-radius: 16px;
-    margin-top: 30px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.10);
-}
-
-img {
-    max-width: 100%;
-    border-radius: 12px;
+.video-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
 }
 
 a {
@@ -75,32 +54,22 @@ a {
 """, unsafe_allow_html=True)
 
 # ============================
-# LOAD YOLO MODEL
+# LOAD MODEL
 # ============================
 model = YOLO("best.torchscript")
 
 # ============================
-# VIDEO TRANSFORMER CLASS
+# VIDEO TRANSFORMER
 # ============================
 class YOLOVideoTransformer(VideoTransformerBase):
     def __init__(self):
         self.model = model
-        self.latest_counts = {}  # real-time count
 
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
         results = self.model(img, imgsz=640)
-
-        counts = {}
-        for box in results[0].boxes:
-            cls_id = int(box.cls[0])
-            cls_name = results[0].names[cls_id]
-            counts[cls_name] = counts.get(cls_name, 0) + 1
-
-        self.latest_counts = counts
         annotated = results[0].plot()
         return annotated
-
 
 # ============================
 # HEADER
@@ -108,31 +77,26 @@ class YOLOVideoTransformer(VideoTransformerBase):
 st.markdown('<a href="https://swayo.vercel.app/categories.html">← Go Back</a>', unsafe_allow_html=True)
 st.markdown("<h1>🗑️ SWAYO: Smart Waste Classifier with YOLO</h1>", unsafe_allow_html=True)
 
-
 # ============================
-# MAIN CARD
+# MAIN CONTENT
 # ============================
 st.markdown('<div class="main-card">', unsafe_allow_html=True)
 
 st.subheader("🎥 Real-time Object Detection")
-st.write("Model akan mendeteksi sampah dari webcam secara real-time dan menghitung jumlah objek setiap detik.")
+st.write("Model akan mendeteksi sampah dari webcam secara real-time.")
 
-col1, col2 = st.columns([1.3, 0.7])
+st.markdown('<div class="video-wrapper">', unsafe_allow_html=True)
 
-# ============================
-# LEFT: VIDEO STREAM
-# ============================
-with col1:
-    webrtc_ctx = webrtc_streamer(
-        key="yolo-webcam",
-        video_transformer_factory=YOLOVideoTransformer,
-        media_stream_constraints={"video": True, "audio": False},
-        async_processing=True,
-    )
+webrtc_streamer(
+    key="yolo-webcam",
+    video_transformer_factory=YOLOVideoTransformer,
+    media_stream_constraints={"video": True, "audio": False},
+    async_processing=True,
+)
 
+st.markdown('</div></div>', unsafe_allow_html=True)
 
 # ============================
 # FOOTER
 # ============================
-st.markdown('<p class="footer">© 2025 SWAYO – Smart Waste Classifier with YOLO</p>', unsafe_allow_html=True)
-
+st.markdown('<p style="text-align:center; margin-top:40px;">© 2025 SWAYO – Smart Waste Classifier with YOLO</p>', unsafe_allow_html=True)
